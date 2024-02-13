@@ -3,12 +3,12 @@ CSS
 Bootstrap
 JS
 HTML to JS
-JS to HTML
-JSON ARRAY, JSON OBJECTS
-Window (location, navigator)
-Regular Expressions
-Local Storage
-Session Storage
+ aws ec2 run-instances \
+    --image-id ami-40d28157 \
+    --count 1 \
+    --instance-type g2.2xlarge \
+    --key-name cli_keypair \
+    --security-group-ids sg-28e2c455
 Loops, conditions, Functions,
 Debugging
 Console Statements
