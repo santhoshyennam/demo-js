@@ -3,12 +3,12 @@ CSS
 Bootstrap
 JS
 HTML to JS
- aws ec2 run-instances \
-    --image-id ami-40d28157 \
-    --count 1 \
-    --instance-type g2.2xlarge \
-    --key-name cli_keypair \
-    --security-group-ids sg-28e2c455
+In summary, Layer 4 lo
+ad balancing operates at the 
+transport layer and makes routing dec
+isions based on network information, while Laye
+r 7 load balancing operates at the application layer and c
+an make routing decisions based on application-specific criteria. The choice between them depends on the specific requirements of the application, including the need for advanced routing capa
 Loops, conditions, Functions,
 Debugging
 Console Statements
