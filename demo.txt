@@ -1,1 +1,40 @@
-Clone the github repo - demo-project
+HTML
+CSS
+Bootstrap
+JS
+HTML to JS
+JS to HTML
+JSON ARRAY, JSON OBJECTS
+Window (location, navigator)
+Regular Expressions
+Local Storage
+Session Storage
+Loops, conditions, Functions,
+Debugging
+Console Statements
+Path Params, Query params
+DOM
+Event Handling ( onclick, ondblclick, onmouseover, onchange, onkeypress, onblur)
+
+Git commands:
+
+git clone <url>
+Git status - to check status of each file
+
+Git add <filename> or git add .
+
+Git commit -m “message”
+
+Git log - check all commits
+
+Git show <commitid> - to check changes
+
+Git remote -v
+
+Git branch
+
+Git checkout -b <branchname>
+
+Git checkout <bname> or git checkout -
+
+Git pull 
