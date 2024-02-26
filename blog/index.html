@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>My Blog</title>
+	<link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/header.css">
+</head>
+<body>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Me</a></li>  
+        <li><a href="hobbies.html">My Hobbies</a></li>
+        <li><a href="hometown.html">Home Town</a></li>
+    </ul>
+
+    <div style="margin-top: 30px;">
+        <p id="text">Hello World! change this text by clickin of below buttons</p>
+        <button id="one" onclick="return onClickButton1()">one</button>
+        <button id="two" onclick="return onClickButton2()">two</button>
+        <button id="three" onclick="return onClickButton3()">three</button>
+      </div>
+
+    <form style="margin-top: 30px;">
+        <input type="text" id="input" placeholder="enter email"  required>
+        <button type="submit" onclick="return validate()">Validate</button>
+        <p id="errorText" style="display:none; color:red;">Incorrect Email,try again.</p>
+      </form>
+        <h2>About this website</h2>
+        <button class="accordion-title">About Myself</button>
+        <div class="accordion-content">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>    
+        <button class="accordion-title">My Hobbies</button>
+        <div class="accordion-content">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        
+        <button class="accordion-title">My Home Town</button>
+        <div class="accordion-content">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+</body>
+<script src="assets/js/index.js"></script>
+<script>
+    onLoad();
+</script>
+</html>
