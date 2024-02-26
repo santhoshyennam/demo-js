@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduling App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #schedule {
+            width: 60%;
+            margin: 0 auto;
+        }
+
+        .event {
+            background-color: #e0f7fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #events, #meetings {
+            margin-bottom: 20px;
+        }
+
+        #newEventForm, #newMeetingForm {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #newEventForm input, #newMeetingForm input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        #addEventBtn, #addMeetingBtn {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="schedule">
+    <h1>Schedule</h1>
+
+    <div>
+        <h2>Events</h2>
+        <div id="events"></div>
+    </div>
+
+    <div id="newEventForm">
+        <input type="text" id="eventName" placeholder="Event Name">
+        <input type="datetime-local" id="eventDateTime">
+        <input type="text" id="eventPriority" placeholder="Priority">
+        <input type="text" id="eventReminder" placeholder="Reminder">
+        <button id="addEventBtn">Add Event</button>
+    </div>
+
+    <div>
+        <h2>Meetings</h2>
+        <div id="meetings"></div>
+    </div>
+
+    <div id="newMeetingForm">
+        <input type="text" id="meetingName" placeholder="Meeting Name">
+        <input type="datetime-local" id="meetingDateTime">
+        <input type="text" id="meetingPriority" placeholder="Priority">
+        <input type="text" id="meetingLocation" placeholder="Location">
+        <button id="addMeetingBtn">Add Meeting</button>
+    </div>
+</div>
+
+<script>
+    function UIObserver() {
+        return {
+            update: function () {
+                updateEvents();
+                updateMeetings();
+            }
+        };
+    }
+
+    function EventIterator(events) {
+        let index = 0;
+
+        return {
+            hasNext: function () {
+                return index < events.length;
+            },
+            next: function () {
+                return events[index++];
+            }
+        };
+    }
+
+    function EventFactory() {
+        return {
+            createEvent: function (name, dateTime, priority, reminder) {
+                return {
+                    name: name,
+                    dateTime: dateTime,
+                    priority: priority,
+                    reminder: reminder
+                };
+            },
+            createMeeting: function (name, dateTime, priority, location) {
+                return {
+                    name: name,
+                    dateTime: dateTime,
+                    priority: priority,
+                    location: location
+                };
+            }
+        };
+    }
+
+    function EventDecorator(event, decoration) {
+        return {
+            ...event,
+            ...decoration
+        };
+    }
+
+    const SchedulerApp = (function () {
+        const eventList = [];
+        const meetingList = [];
+        const eventFactory = EventFactory();
+        const uiObserver = UIObserver();
+
+        return {
+            addEvent: function (name, dateTime, priority, reminder) {
+                const newEvent = eventFactory.createEvent(name, dateTime, priority, reminder);
+                const decoratedEvent = EventDecorator(newEvent, { type: 'Event' });
+                eventList.push(decoratedEvent);
+                uiObserver.update();
+            },
+            addMeeting: function (name, dateTime, priority, location) {
+                const newMeeting = eventFactory.createMeeting(name, dateTime, priority, location);
+                const decoratedMeeting = EventDecorator(newMeeting, { type: 'Meeting' });
+                meetingList.push(decoratedMeeting);
+                uiObserver.update();
+            },
+            eventList,
+            meetingList
+        };
+    })();
+
+    function updateEvents() {
+        const eventsContainer = document.getElementById('events');
+        eventsContainer.innerHTML = '';
+
+        const iterator = EventIterator(SchedulerApp.eventList);
+        while (iterator.hasNext()) {
+            const event = iterator.next();
+            const eventElement = document.createElement('div');
+            eventElement.className = 'event';
+            eventElement.innerHTML = `
+                <div>${event.name}</div>
+                <div>${event.dateTime}</div>
+                <div>${event.priority || ''}</div>
+                <div>${event.reminder || ''}</div>
+                <div>${event.type}</div>
+            `;
+            eventsContainer.appendChild(eventElement);
+        }
+    }
+
+    function updateMeetings() {
+        const meetingsContainer = document.getElementById('meetings');
+        meetingsContainer.innerHTML = '';
+
+        const iterator = EventIterator(SchedulerApp.meetingList);
+        while (iterator.hasNext()) {
+            const meeting = iterator.next();
+            const meetingElement = document.createElement('div');
+            meetingElement.className = 'event';
+            meetingElement.innerHTML = `
+                <div>${meeting.name}</div>
+                <div>${meeting.dateTime}</div>
+                <div>${meeting.priority || ''}</div>
+                <div>${meeting.location || ''}</div>
+                <div>${meeting.type}</div>
+            `;
+            meetingsContainer.appendChild(meetingElement);
+        }
+    }
+
+    document.getElementById('addEventBtn').addEventListener('click', function () {
+        const eventName = document.getElementById('eventName').value;
+        const eventDateTime = document.getElementById('eventDateTime').value;
+        const eventPriority = document.getElementById('eventPriority').value;
+        const eventReminder = document.getElementById('eventReminder').value;
+
+        if (eventName && eventDateTime) {
+            SchedulerApp.addEvent(eventName, eventDateTime, eventPriority, eventReminder);
+        } else {
+            alert('Please enter both event name and date/time.');
+        }
+    });
+
+    document.getElementById('addMeetingBtn').addEventListener('click', function () {
+        const meetingName = document.getElementById('meetingName').value;
+        const meetingDateTime = document.getElementById('meetingDateTime').value;
+        const meetingPriority = document.getElementById('meetingPriority').value;
+        const meetingLocation = document.getElementById('meetingLocation').value;
+
+        if (meetingName && meetingDateTime) {
+            SchedulerApp.addMeeting(meetingName, meetingDateTime, meetingPriority, meetingLocation);
+        } else {
+            alert('Please enter both meeting name and date/time.');
+        }
+    });
+
+    SchedulerApp.addEvent('Important Meeting', '2022-12-01T14:30', 'High', 'Set Reminder');
+    SchedulerApp.addMeeting('Team Lunch', '2022-12-02T12:00', 'Medium', 'Cafeteria');
+</script>
+
+</body>
+</html>

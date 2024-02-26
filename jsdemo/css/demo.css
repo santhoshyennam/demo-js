@@ -1,0 +1,17 @@
+#image {
+    border-radius: 10px;
+    opacity: 0.5;
+}
+
+#image_text {
+    border-radius: 10px;
+}
+
+#anchortag {
+    color: white;
+    background-color: red;
+    padding: 10px 20px 0px 20px;
+    text-decoration: none;
+    border-radius: 20px;
+    height: 30px;
+}

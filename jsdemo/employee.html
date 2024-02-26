@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #categoryInputForm {
+            margin-bottom: 20px;
+        }
+
+        #taskInputForm {
+            margin-bottom: 20px;
+        }
+
+        #taskList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .task {
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<div id="categoryInputForm">
+    <label for="categoryName">Category Name:</label>
+    <input type="text" id="categoryName">
+    <button onclick="createCategory()">Create Category</button>
+</div>
+
+<div id="taskInputForm">
+    <label for="categorySelector">Select Category:</label>
+    <select id="categorySelector"></select>
+    <br>
+    <label for="taskTitle">Task Title:</label>
+    <input type="text" id="taskTitle">
+    <label for="taskDescription">Task Description:</label>
+    <input type="text" id="taskDescription">
+    <label for="taskDueDate">Due Date:</label>
+    <input type="text" id="taskDueDate">
+    <label for="taskPriority">Priority:</label>
+    <select id="taskPriority">
+        <option value="1">Low</option>
+        <option value="2">Medium</option>
+        <option value="3">High</option>
+    </select>
+    <button onclick="createTask()">Create Task</button>
+</div>
+
+<ul id="taskList"></ul>
+
+<script>
+    // Singleton pattern for managing categories and tasks
+    const TaskManager = (function () {
+        let instance;
+
+        function createInstance() {
+            const STORAGE_KEY = 'taskManager';
+            let categories = [];
+            const observers = [];
+
+            function notifyObservers() {
+                for (const observer of observers) {
+                    observer.update();
+                }
+            }
+
+            function saveToLocalStorage() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
+            }
+
+            function loadFromLocalStorage() {
+                const storedData = localStorage.getItem(STORAGE_KEY);
+                categories = storedData ? JSON.parse(storedData) : [];
+            }
+
+            return {
+                addCategory: function (category) {
+                    categories.push(category);
+                    saveToLocalStorage();
+                    notifyObservers();
+                },
+                getCategories: function () {
+                    return categories;
+                },
+                addObserver: function (observer) {
+                    observers.push(observer);
+                },
+                saveTask: function () {
+                    saveToLocalStorage();
+                },
+                loadTasks: function () {
+                    loadFromLocalStorage();
+                    notifyObservers();
+                },
+                notifyObservers: function() {
+                    notifyObservers()
+                }
+            };
+        }
+
+        return {
+            getInstance: function () {
+                if (!instance) {
+                    instance = createInstance();
+                }
+                return instance;
+            }
+        };
+    })();
+
+    // Observer pattern for updating UI
+    function UIObserver() {
+        return {
+            update: function () {
+                updateCategoryDropdown();
+                updateTaskList();
+            }
+        };
+    }
+
+    // Builder pattern for creating tasks
+    function TaskBuilder(title) {
+        let description = "";
+        let dueDate = "";
+        let priority = 1;
+
+        return {
+            setDescription: function (desc) {
+                description = desc;
+                return this;
+            },
+            setDueDate: function (date) {
+                dueDate = date;
+                return this;
+            },
+            setPriority: function (prio) {
+                priority = prio;
+                return this;
+            },
+            build: function () {
+                return {
+                    title: title,
+                    description: description,
+                    dueDate: dueDate,
+                    priority: priority,
+                    completed: false
+                };
+            }
+        };
+    }
+
+    // Strategy pattern for organizing tasks
+    const TaskOrganizer = (function () {
+        const strategies = {
+            project: function (tasks) {
+                return tasks.sort((a, b) => a.title.localeCompare(b.title));
+            },
+            dueDate: function (tasks) {
+                return tasks.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+            }
+        };
+
+        return {
+            organize: function (strategy, tasks) {
+                return strategies[strategy](tasks);
+            }
+        };
+    })();
+
+    // UI
+    const taskManager = TaskManager.getInstance();
+    const uiObserver = UIObserver();
+    taskManager.addObserver(uiObserver);
+
+    function createCategory() {
+        const categoryName = document.getElementById('categoryName').value;
+        const category = { name: categoryName, tasks: [] };
+        taskManager.addCategory(category);
+    }
+
+   
+
+ function createTask() {
+        const categorySelector = document.getElementById('categorySelector');
+        const selectedCategoryIndex = categorySelector.selectedIndex;
+        if (selectedCategoryIndex === -1) {
+            alert('Please create a category first.');
+            return;
+        }
+
+        const selectedCategory = taskManager.getCategories()[selectedCategoryIndex];
+        if (!selectedCategory) {
+            alert('Invalid category selected.');
+            return;
+        }
+
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
+        const dueDate = document.getElementById('taskDueDate').value;
+        const priority = parseInt(document.getElementById('taskPriority').value);
+
+        const task = TaskBuilder(title)
+            .setDescription(description)
+            .setDueDate(dueDate)
+            .setPriority(priority)
+            .build();
+
+        selectedCategory.tasks.push(task);
+        taskManager.saveTask();
+        taskManager.notifyObservers();
+    }
+
+    function updateCategoryDropdown() {
+        const categorySelector = document.getElementById('categorySelector');
+        categorySelector.innerHTML = "";
+
+        const categories = taskManager.getCategories();
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.name;
+            option.text = category.name;
+            categorySelector.add(option);
+        });
+    }
+
+    function updateTaskList() {
+        const taskList = document.getElementById('taskList');
+        taskList.innerHTML = "";
+
+        const categories = taskManager.getCategories();
+        categories.forEach(category => {
+            document.write("Cateogry - ",category.name)
+            category.tasks.forEach(task => {
+                const listItem = document.createElement('li');
+                listItem.className = `task ${task.completed ? 'completed' : ''}`;
+                var listItem1 = `
+                    ${category.name} - ${task.title} - ${task.description} - ${task.dueDate} - Priority: ${task.priority}
+                    <input type="checkbox" onchange="toggleTaskCompletion('${category.name}', '${task.title}')">
+                `;
+                document.write(listItem1);
+            });
+        });
+    }
+
+    function toggleTaskCompletion(categoryName, taskTitle) {
+        const categories = taskManager.getCategories();
+        const category = categories.find(c => c.name === categoryName);
+        if (category) {
+            const task = category.tasks.find(t => t.title === taskTitle);
+            if (task) {
+                task.completed = !task.completed;
+                taskManager.saveTask();
+                taskManager.notifyObservers();
+            }
+        }
+    }
+
+    // Load tasks from localStorage on page load
+    taskManager.loadTasks();
+</script>
+
+</body>
+</html>
